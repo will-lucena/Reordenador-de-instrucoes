@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<list key="EGit.KnownHosts">
+		<item value="git.eclipse.org"/>
+		<item value="github.com"/>
+		<item value="bitbucket.org"/>
+	</list>
+	<list key="RepositorySelectionPage.UsedUris">
+		<item value="https://github.com/will-lucena/Reordenador-de-instrucoes"/>
+		<item value="file:///E:\Projetos\Reordenador-de-instrucoes"/>
+	</list>
+	<list key="CommitDialog.authorValues">
+		<item value="Will &lt;Will@192.168.0.11&gt;"/>
+	</list>
+	<list key="CommitDialog.committerValues">
+		<item value="Will &lt;Will@192.168.0.11&gt;"/>
+	</list>
+	<section name="org.eclipse.egit.ui.internal.dialogs.RebaseTargetSelectionDialog.dialogBounds">
+		<item value="538" key="DIALOG_WIDTH"/>
+		<item value="1|Segoe UI|9.0|0|WINDOWS|1|-12|0|0|0|400|0|0|0|1|0|0|0|0|Segoe UI" key="DIALOG_FONT_NAME"/>
+		<item value="532" key="DIALOG_HEIGHT"/>
+		<item value="379" key="DIALOG_X_ORIGIN"/>
+		<item value="146" key="DIALOG_Y_ORIGIN"/>
+	</section>
+	<section name="org.eclipse.egit.ui.internal.dialogs.ResetTargetSelectionDialog.dialogBounds">
+		<item value="538" key="DIALOG_WIDTH"/>
+		<item value="1|Segoe UI|9.0|0|WINDOWS|1|-12|0|0|0|400|0|0|0|1|0|0|0|0|Segoe UI" key="DIALOG_FONT_NAME"/>
+		<item value="750" key="DIALOG_HEIGHT"/>
+		<item value="379" key="DIALOG_X_ORIGIN"/>
+		<item value="8" key="DIALOG_Y_ORIGIN"/>
+	</section>
+	<section name="org.eclipse.egit.ui.internal.push.PushResultDialog.dialogBounds">
+		<item value="666" key="DIALOG_WIDTH"/>
+		<item value="1|Segoe UI|9.0|0|WINDOWS|1|-12|0|0|0|400|0|0|0|1|0|0|0|0|Segoe UI" key="DIALOG_FONT_NAME"/>
+		<item value="458" key="DIALOG_HEIGHT"/>
+		<item value="264" key="DIALOG_X_ORIGIN"/>
+		<item value="269" key="DIALOG_Y_ORIGIN"/>
+		<list key="sashWeights">
+			<item value="600"/>
+			<item value="400"/>
+		</list>
+	</section>
+	<section name="GitCommitMessageComponent">
+		<list key="E:\Projetos\Reordenador-de-instrucoes\.git">
+			<item value="false"/>
+			<item value="Will &lt;Will@192.168.0.11&gt;"/>
+			<item value="upload"/>
+			<item value="Will &lt;Will@192.168.0.11&gt;"/>
+			<item value="8fee155c5cd8d3626b8f22f56612b50ae9f18e5d"/>
+		</list>
+		<list key="E:\Projetos\.git">
+			<item value="empty"/>
+		</list>
+	</section>
+	<section name="org.eclipse.egit.ui.internal.staging.StagingView">
+		<item value="614,385" key="STAGING_SASH_FORM_WEIGHT"/>
+		<item value="false" key="sortItemState"/>
+		<item value="500,500" key="HORIZONTAL_SASH_FORM_WEIGHT"/>
+	</section>
+</section>
