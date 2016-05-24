@@ -25,12 +25,10 @@ public class Funcoes
 		System.out.println(">>> Inicializando banco de registradores <<<");
 		try
 		{
-			System.out.println("Lendo grafo...\n");
 			FileReader arquivo;
 			arquivo = new FileReader(registradores);
 			BufferedReader ler = new BufferedReader(arquivo);
 			String linha = ler.readLine();
-			System.out.println(linha);
 			linha = ler.readLine();
 			
 			while(linha != null)
@@ -102,7 +100,6 @@ public class Funcoes
 			FileReader arquivo = new FileReader(grafo);
 			BufferedReader ler = new BufferedReader(arquivo);
 			String linha = ler.readLine();
-			System.out.println(linha);
 			linha = ler.readLine();
 			
 			while (linha != null)
@@ -113,7 +110,7 @@ public class Funcoes
 				linha = ler.readLine();
 			}
 			arquivo.close();
-			criarBancoDeRegistradores("registradores.txt");
+			criarBancoDeRegistradores("E:/Projetos/src/registradores.txt");
 			atualizarBancoDeRegistradores(instrucoes);
 			return instrucoes;
 		}

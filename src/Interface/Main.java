@@ -12,7 +12,7 @@ public class Main
 	public static void main(String[] args) 
 	{
 		Funcoes teste = new Funcoes();
-		String caminho = "grafo.txt";
+		String caminho = "E:/Projetos/src/grafo.txt";
 		ArrayList<Instrucao> lista = teste.lerGrafo(caminho);
 		ArrayList<Instrucao> beta = teste.buscarInstrucoesIndependentes(lista);
 		teste.simularCiclos(beta);
