@@ -13,15 +13,14 @@ public class Main
 	{
 		Funcoes teste = new Funcoes();
 		String caminho = "src/grafo.txt";
+		String saida = "src/novografo.txt";
 		ArrayList<Instrucao> lista = teste.lerGrafo(caminho);
-		ArrayList<Instrucao> beta = teste.buscarInstrucoesIndependentes(lista);
-		teste.simularCiclos(beta);
-		teste.salvarGrafo(beta);
-		//*
-		beta = teste.buscarInstrucoesSemConflito(beta);
-		beta = teste.organizarInstrucoes(beta);
-		teste.salvarGrafo(beta);
-		teste.show(beta);
-		/**/
+		lista = teste.buscarInstrucoesIndependentes(lista);
+		teste.simularCiclos(lista);
+		teste.salvarGrafo(lista, saida);
+		lista = teste.buscarInstrucoesSemConflito(lista);
+		lista = teste.organizarInstrucoes(lista);
+		teste.salvarGrafo(lista, saida);
+		teste.mostrarInstrucoes(lista);
 	}
 }
