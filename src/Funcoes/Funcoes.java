@@ -54,15 +54,29 @@ public class Funcoes
 		}
 	}
 	
-	void atualizarBancoDeRegistradores(ArrayList<Instrucao> instrucoes)
+	void resetarRegistradores(ArrayList<Instrucao> instrucoes)
 	{
+		for (int i = 0; i < conjuntoDeRegistradores.size(); i++)
+		{
+			conjuntoDeRegistradores.get(i).ehEscrito = false;
+			conjuntoDeRegistradores.get(i).ehLido = false;
+		}
+		for (int i = 0; i < instrucoes.size(); i++)
+		{
+			instrucoes.get(i).dependenciaFalsa = false;
+		}
+	}
+	
+	void atualizarBancoDeRegistradores(ArrayList<Instrucao> instrucoes)
+	{		
+		resetarRegistradores(instrucoes);
 		for (int i = 0; i < instrucoes.size(); i++)
 		{
 			for (int j = 0; j < conjuntoDeRegistradores.size(); j++)
 			{
-				String s1 = instrucoes.get(i).destino;
-				String s2 = instrucoes.get(i).operando1;
-				String s3 = instrucoes.get(i).operando2;
+				String s1 = instrucoes.get(i).destino.nome;
+				String s2 = instrucoes.get(i).operando1.nome;
+				String s3 = instrucoes.get(i).operando2.nome;
 				String s4 = conjuntoDeRegistradores.get(j).nome;
 				
 				if (s1.equals(s4))
@@ -110,7 +124,7 @@ public class Funcoes
 				linha = ler.readLine();
 			}
 			arquivo.close();
-			criarBancoDeRegistradores("E:/Projetos/src/registradores.txt");
+			criarBancoDeRegistradores("src/registradores.txt");
 			atualizarBancoDeRegistradores(instrucoes);
 			return instrucoes;
 		}
@@ -163,17 +177,17 @@ public class Funcoes
 				cont++;
 			//dest
 			else if (v[i] != '\t' && cont == 2)
-				n1.destino = n1.destino + v[i];
+				n1.destino.nome = n1.destino.nome + v[i];
 			else if (v[i] == '\t' && cont == 2)
 				cont++;
 			//op1
 			else if (v[i] != '\t' && cont == 3)
-				n1.operando1 = n1.operando1 + v[i];
+				n1.operando1.nome = n1.operando1.nome + v[i];
 			else if (v[i] == '\t' && cont == 3)
 				cont++;
 			//op2
 			else if (v[i] != '\t' && cont == 4)
-				n1.operando2 = n1.operando2 + v[i];
+				n1.operando2.nome = n1.operando2.nome + v[i];
 			else if (v[i] == '\t' && cont == 4)
 				cont++;
 			//inst_dependente
@@ -198,9 +212,9 @@ public class Funcoes
 				
 				escrever.print(lista.get(i).numeroDaInstrucao + "\t");
 				escrever.print(lista.get(i).operacao + "\t");
-				escrever.print(lista.get(i).destino + "\t");
-				escrever.print(lista.get(i).operando1 + "\t");
-				escrever.print(lista.get(i).operando2 + "\t");
+				escrever.print(lista.get(i).destino.nome + "\t");
+				escrever.print(lista.get(i).operando1.nome + "\t");
+				escrever.print(lista.get(i).operando2.nome + "\t");
 				escrever.print(lista.get(i).dependentes + "\t");
 				escrever.print(lista.get(i).cicloInicial + "\n");
 			}
@@ -359,9 +373,9 @@ public class Funcoes
 			
 			System.out.print(lista.get(i).numeroDaInstrucao + "\t");
 			System.out.print(lista.get(i).operacao + "\t");
-			System.out.print(lista.get(i).destino + "\t");
-			System.out.print(lista.get(i).operando1 + "\t");
-			System.out.print(lista.get(i).operando2 + "\t");
+			System.out.print(lista.get(i).destino.nome + "\t");
+			System.out.print(lista.get(i).operando1.nome + "\t");
+			System.out.print(lista.get(i).operando2.nome + "\t");
 			System.out.print(lista.get(i).dependentes + "\t");
 			System.out.print(lista.get(i).cicloInicial + "\t");
 			System.out.print(lista.get(i).dependenciaFalsa + "\n");
@@ -474,12 +488,51 @@ public class Funcoes
 			for (int j = 0; j < lista.size(); j++)
 			{
 				if(lista.get(emQuarentena.get(i)).destino.equals(lista.get(j).destino) && 
-						Integer.parseInt(lista.get(i).numeroDaInstrucao) < j)
+						emQuarentena.get(i) >= j)
 				{
-					return false;
+					Registrador antigo = lista.get(emQuarentena.get(i)).destino;
+					lista.get(emQuarentena.get(i)).destino = buscarNovoRegistrador();
+					if (lista.get(emQuarentena.get(i)).destino == null)
+					{
+						lista.get(emQuarentena.get(i)).destino = antigo;
+						return false;
+					}
+					else
+					{
+						for (int k = j; k < lista.size(); k++)
+						{
+							String s1 = lista.get(emQuarentena.get(i)).dependentes;
+							String s2 = lista.get(k).numeroDaInstrucao;
+							if (compararStrings(s1, s2))
+							{
+								if (lista.get(k).operando1.nome.contains(antigo.nome))
+								{
+									lista.get(k).operando1 = lista.get(emQuarentena.get(i)).destino;
+								}
+								if (lista.get(k).operando2.nome.contains(antigo.nome))
+								{
+									lista.get(k).operando2 = lista.get(emQuarentena.get(i)).destino;
+								}
+							}
+						}
+					}
+					atualizarBancoDeRegistradores(lista);
 				}
 			}
 		}
 		return true;
+	}
+
+	public Registrador buscarNovoRegistrador()
+	{
+		for(int i = 0; i < conjuntoDeRegistradores.size(); i++)
+		{
+			if (!conjuntoDeRegistradores.get(i).ehEscrito && !conjuntoDeRegistradores.get(i).ehLido)
+			{
+				return conjuntoDeRegistradores.get(i);
+			}
+		}
+		
+		return null;
 	}
 }
