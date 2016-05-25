@@ -5,9 +5,9 @@ public class Instrucao
 	//Informações fornecidas no grafo
 	public String numeroDaInstrucao;
 	public String operacao;
-	public String destino;
-	public String operando1;
-	public String operando2;
+	public Registrador destino;
+	public Registrador operando1;
+	public Registrador operando2;
 	public String dependentes;
 	public String descricao;
 	public int cicloInicial;
@@ -18,9 +18,9 @@ public class Instrucao
 	{
 		numeroDaInstrucao = "";
 		operacao = "";
-		destino = "";
-		operando1 = "";
-		operando2 = "";
+		destino = new Registrador();
+		operando1 = new Registrador();
+		operando2 = new Registrador();
 		dependentes = "";
 		descricao = "";
 		cicloInicial = 0;
