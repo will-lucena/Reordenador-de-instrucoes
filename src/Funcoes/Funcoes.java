@@ -65,7 +65,7 @@ public class Funcoes
 				String s3 = instrucoes.get(i).operando2;
 				String s4 = conjuntoDeRegistradores.get(j).nome;
 				
-				if (compararStrings(s1, s4))
+				if (s1.equals(s4))
 				{
 					if (conjuntoDeRegistradores.get(j).ehEscrito)
 					{
@@ -73,7 +73,7 @@ public class Funcoes
 					}
 					conjuntoDeRegistradores.get(j).ehEscrito = true;
 				}
-				if (compararStrings(s2, s4) || compararStrings(s3, s4))
+				if (s2.equals(s4) || s3.equals(s4))
 				{
 					conjuntoDeRegistradores.get(j).ehLido = true;
 				}
@@ -431,7 +431,7 @@ public class Funcoes
 					simularCiclos(nova);
 					while(buscarConflitoAuxiliar(nova, atual-1, 0) == true && atual > 1)
 					{
-						if (analisarCorretude(nova) == false)
+						if (!analisarCorretude(nova) || !verificarFalsaDependecia(nova))
 						{
 							prob = true;
 							break;
@@ -458,5 +458,28 @@ public class Funcoes
 		return lista;
 	}
 
-
+	public boolean verificarFalsaDependecia(ArrayList<Instrucao> lista)
+	{
+		ArrayList<Integer> emQuarentena = new ArrayList<>();
+		for (int i = 0; i< lista.size(); i++)
+		{
+			if(lista.get(i).dependenciaFalsa)
+			{
+				emQuarentena.add(i);
+			}
+		}
+		
+		for(int i = 0; i < emQuarentena.size(); i++)
+		{
+			for (int j = 0; j < lista.size(); j++)
+			{
+				if(lista.get(emQuarentena.get(i)).destino.equals(lista.get(j).destino) && 
+						Integer.parseInt(lista.get(i).numeroDaInstrucao) < j)
+				{
+					return false;
+				}
+			}
+		}
+		return true;
+	}
 }
