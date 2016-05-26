@@ -138,7 +138,7 @@ public class Funcoes
 	 * Retorna o arrayList que servirá como buffer do arquivo durante a execução do programa
 	 * 
 	 */
-	ArrayList<Instrucao> lerGrafo(String grafo)
+	public ArrayList<Instrucao> lerGrafo(String grafo)
 	{
 		System.out.println(">>> Leitura do grafo iniciada <<<");
 		ArrayList<Instrucao> instrucoes = new ArrayList<>();
@@ -188,7 +188,7 @@ public class Funcoes
 	 * Retorna a instrução lida
 	 * 
 	 */
-	Instrucao criarInstrucao(String linha)
+	public Instrucao criarInstrucao(String linha)
 	{
 		int contadorDetab = 0;
 		Instrucao instrucao = new Instrucao();
@@ -445,7 +445,7 @@ public class Funcoes
 	 * Percorre o arrayList passado como parâmetro e imprime todos os campos de sua instrução, uma por uma
 	 * 
 	 */
-	void mostrarInstrucoes(ArrayList<Instrucao> listaDeInstrucoes)
+	public void mostrarInstrucoes(ArrayList<Instrucao> listaDeInstrucoes)
 	{
 		System.out.println(">>> Exibindo grafo <<<");
 		System.out.println();
@@ -493,7 +493,6 @@ public class Funcoes
 		return true;
 	}	
 	
-	
 	/*
 	 * Função responsável por ordenar as intruções por ordem do ciclo inicial
 	 * Recebe um arrayList de instruções e retorna-o ordenado
@@ -516,7 +515,6 @@ public class Funcoes
 		}
 		return listaDeInstrucoes;
 	}
-	
 	
 	/*
 	 * Função responsável por fazer o reordenamento reordenar as instruções
@@ -648,7 +646,6 @@ public class Funcoes
 		return true;
 	}
 
-	
 	/*
 	 * Função responsável por buscar um registrador vago no banco de registradores
 	 * Está função é interna, chamada na correção de falsas dependencias para pegar um novo registrador
