@@ -16,11 +16,23 @@ public class Funcoes
 {
 	Scanner ler = new Scanner(System.in);
 	int instrucoesIndependentes = 0;
-	boolean trouble = false;
+	boolean podeTrocar = true;
 	ArrayList<Registrador> conjuntoDeRegistradores = new ArrayList<>();
+	
+	public String reordenar(String caminho, String saida)
+	{
+		ArrayList<Instrucao> buffer = lerGrafo(caminho);
+		buffer = buscarInstrucoesIndependentes(buffer);
+		buffer = reordenarInstrucoes(buffer);
+		buffer = organizarInstrucoes(buffer);
+		salvarGrafo(buffer, saida);
+		mostrarInstrucoes(buffer);
+		return saida;
+	}
 	
 	/*
 	 * Função responsável por criar o banco de registradores
+	 * Função interna chamada na leitura do grafo
 	 * Recebe uma string que indica o caminho do arquivo .txt que contém o nome dos registradores
 	 * Cada linha é um registrador
 	 * Preenche a variavel global "Conjunto de Registradores" com o nome dos registradores do .txt
@@ -50,7 +62,7 @@ public class Funcoes
 			System.out.println(">>> A inicialização falhou <<<");
 		} catch (IOException excpetion) 
 		{
-			System.err.println("Falha na leitura");
+			System.err.println("Erro na leitura");
 			excpetion.printStackTrace();
 			System.out.println(">>> A inicialização falhou <<<");
 		}
@@ -62,6 +74,7 @@ public class Funcoes
 	
 	/*
 	 * Função responsável por resetar os registradores para que eles sejam atualizados
+	 * Função interna chamada na atualização do banco de registradores
 	 * Reseta também o campo "Dependencia Falsa" das instruções para que possam ser atualizadas
 	 * Recebe uma lista de instruções
 	 * 
@@ -81,6 +94,7 @@ public class Funcoes
 	
 	/*
 	 * Função responsável por atualizar o banco de registradores
+	 * Função interna usada na leitura do grafo e correção de falsas dependencias
 	 * Recebe uma lista de instruções a serem atualizadas junto com o banco de registradores
 	 * Reseta o estado atual dos registradores e do alerta da lista sobre dependencias falsas
 	 * Percorre a lista de instruções e pra cada instrução verifica todo o banco buscando seus registradores
@@ -124,7 +138,7 @@ public class Funcoes
 	 * Retorna o arrayList que servirá como buffer do arquivo durante a execução do programa
 	 * 
 	 */
-	public ArrayList<Instrucao> lerGrafo(String grafo)
+	ArrayList<Instrucao> lerGrafo(String grafo)
 	{
 		System.out.println(">>> Leitura do grafo iniciada <<<");
 		ArrayList<Instrucao> instrucoes = new ArrayList<>();
@@ -161,9 +175,7 @@ public class Funcoes
 		}
 		finally
 		{
-			//Após leitura do arquivo criação da lista evoca o método para mostrar as instruções
-			mostrarInstrucoes(instrucoes);
-			System.out.println(">>> Leitura do grafo encerrada! <<<");
+			System.out.println(">>> Leitura do grafo encerrada! <<<\n");
 		}
 	}
 	
@@ -217,12 +229,13 @@ public class Funcoes
 
 	/*
 	 * Função responsável por gerar um arquivo de texto com base no arrayList usado como buffer de um grafo
+	 * Função interna chamada na leitura do grafo
 	 * Recebe um arrayList
 	 * Cria um buffer do tipo "file writer" para criar o arquivo de texto que será passado como saida
 	 * Percorre o arrayList passado na entrada e a cada indice escreve seus atributos na linha do arquivo
 	 * Retorna o caminho do arquivo de saida
 	 */
-	public String salvarGrafo(ArrayList<Instrucao> lista, String localParaArmazenamento)
+	String salvarGrafo(ArrayList<Instrucao> lista, String localParaArmazenamento)
 	{
 		System.out.println(">>> Gerando novo grafo <<<");
 		
@@ -255,7 +268,7 @@ public class Funcoes
 		}
 		finally
 		{
-			System.out.println(">>> Construção do novo arquivo encerrada! <<<");
+			System.out.println(">>> Construção do novo arquivo encerrada! <<<\n");
 		}
 	}
 	
@@ -267,8 +280,9 @@ public class Funcoes
 	 * Passo1: Busca e insere num arrayList auxiliar as instruções independentes
 	 * Passo2: Busca e insere no arrayList auxiliar as intruções restantes
 	 * Retorna a lista criada
+	 * 
 	 */
-	public ArrayList<Instrucao> buscarInstrucoesIndependentes(ArrayList<Instrucao> listaDeInstrucoes)
+	ArrayList<Instrucao> buscarInstrucoesIndependentes(ArrayList<Instrucao> listaDeInstrucoes)
 	{
 		System.out.println(">>> Busca por instruções independentes iniciada <<<");
 		boolean indepentente = true;
@@ -312,7 +326,7 @@ public class Funcoes
 			
 		}
 		System.out.println("Foram encontradas " + instrucoesIndependentes + " instrucoes independentes");
-		System.out.println(">>> Busca de instruções independentes encerrada! <<<");
+		System.out.println(">>> Busca de instruções independentes encerrada! <<<\n");
 		return bufferDaLista;
 	}
 	
@@ -323,7 +337,7 @@ public class Funcoes
 	 * Inicializa o campo de ciclo inicial das instruções
 	 * 
 	 */
-	public void simularCiclos(ArrayList<Instrucao> listaDeInstrucoes)
+	void simularCiclos(ArrayList<Instrucao> listaDeInstrucoes)
 	{
 		for (int index = 0; index < listaDeInstrucoes.size(); index++)
 		{
@@ -363,7 +377,8 @@ public class Funcoes
 	
 	/*
 	 * Função responsável por auxiliar na analise de conflito nas reordenações
-	 * Esta função é de uso interno, chamada no reordenamento de instruções e verifica um pequeno bloco de instruções da lista
+	 * Esta função é de uso interno, chamada no reordenamento de instruções
+	 * Verifica um pequeno bloco de instruções da lista
 	 * Recebe um arrayList com as instruções, um inteiro indicando a posição inicial do "bloco" e outro indicando o final
 	 * Percorre esse "bloco" de instruções avaliando se há conflito nelas
 	 * Um conflito ocorre quando ao reordenar as intruções uma instrução com dependencia começa antes da sua "fornecedora" terminar
@@ -381,7 +396,7 @@ public class Funcoes
 			int tempo = lista.get(index).cicloInicial - lista.get(indexAux).cicloInicial;
 			if (instrucaoAtual.contains(instrucaoReordenada) && tempo < 3)
 			{
-				trouble = true;
+				podeTrocar = false;
 				return false;
 			}
 		}
@@ -389,215 +404,267 @@ public class Funcoes
 	}
 	
 	/*
-	 * Não corrigida
+	 * Função responsável por trocar a posição de duas instruções
+	 * Está função é de uso interno, chamada no reordenamento de instruções
+	 * Recebe um arrayList com as intruções e dois inteiros que indicam as posições no arrayList que deverão ser trocadas
+	 * Armazena a instrução da posição x em um buffer e troca x com y e em seguida y com o buffer
+	 * 
 	 */
 	void trocarPosicao(ArrayList<Instrucao> lista, int x, int y)
 	{
-		Instrucao tmp = lista.get(y);
+		Instrucao buffer = lista.get(y);
 		lista.set(y, lista.get(x));
-		lista.set(x, tmp);
+		lista.set(x, buffer);
 	}
 	
 	/*
-	 * Não corrigida
+	 * Função responsável por clonar uma lista
+	 * Está função é de uso interno e faz uma cópia de uma lista passada como entrada
+	 * Recebe um arrayList de instruções a ser oopiado
+	 * Cria uma lista temporaria que servirá de buffer, percorre a lista passada como parâmetro
+	 * Atribuindo cada elemento da lista em uma posição do buffer
+	 * Retorna o buffer criado
+	 * 
 	 */
-	ArrayList<Instrucao> clonarLista(ArrayList<Instrucao> lista)
+	ArrayList<Instrucao> clonarLista(ArrayList<Instrucao> listaDeInstrucoes)
 	{
-		ArrayList<Instrucao> clone = new ArrayList<Instrucao>();
+		ArrayList<Instrucao> buffer = new ArrayList<Instrucao>();
 		
-		for (int i = 0; i < lista.size(); i++)
+		for (int index = 0; index < listaDeInstrucoes.size(); index++)
 		{
-			clone.add(lista.get(i));
+			buffer.add(listaDeInstrucoes.get(index));
 		}
 		
-		return clone;
+		return buffer;
 	}
 	
 	/*
-	 * Não corrigida
+	 * Função responsável por mostrar uma lista
+	 * Está função recebe um arrayList com instruções e imprime seus elementos
+	 * Recebe um arrayList
+	 * Percorre o arrayList passado como parâmetro e imprime todos os campos de sua instrução, uma por uma
+	 * 
 	 */
-	public void mostrarInstrucoes(ArrayList<Instrucao> lista)
+	void mostrarInstrucoes(ArrayList<Instrucao> listaDeInstrucoes)
 	{
-		for (int i = 0; i < lista.size(); i++)
+		System.out.println(">>> Exibindo grafo <<<");
+		System.out.println();
+		System.out.println("#inst 	tipo	dest 	op1 	op2 	#inst_recebe_resultado	Ciclo_Inicial"
+				+ "	Falsa_Dependencia");
+		for (int index = 0; index < listaDeInstrucoes.size(); index++)
 		{
-			
-			System.out.print(lista.get(i).numeroDaInstrucao + "\t");
-			System.out.print(lista.get(i).operacao + "\t");
-			System.out.print(lista.get(i).destino.nome + "\t");
-			System.out.print(lista.get(i).operando1.nome + "\t");
-			System.out.print(lista.get(i).operando2.nome + "\t");
-			System.out.print(lista.get(i).dependentes + "\t");
-			System.out.print(lista.get(i).cicloInicial + "\t");
-			System.out.print(lista.get(i).dependenciaFalsa + "\n");
+			System.out.print(listaDeInstrucoes.get(index).numeroDaInstrucao + "\t");
+			System.out.print(listaDeInstrucoes.get(index).operacao + "\t");
+			System.out.print(listaDeInstrucoes.get(index).destino.nome + "\t");
+			System.out.print(listaDeInstrucoes.get(index).operando1.nome + "\t");
+			System.out.print(listaDeInstrucoes.get(index).operando2.nome + "\t\t");
+			System.out.print(listaDeInstrucoes.get(index).dependentes + "\t\t\t");
+			System.out.print(listaDeInstrucoes.get(index).cicloInicial + "\t\t");
+			System.out.print(listaDeInstrucoes.get(index).dependenciaFalsa + "\n");
 		}
 		System.out.println();
+		System.out.println(">>> Exibicao encerrada! <<<\n");
 	}
 	
 	/*
-	 * Não corrigida
+	 * Função responsável por manter a corretude do grafo
+	 * Está função é de uso interno e recebe um arrayList de instruções, retornando um booleano
+	 * A corretude é mantida se uma instrução y depende da x e a y vem depois da x, para todas as instruções
+	 * Percorre o arrayList passado como parâmetro e pra cada posição busca seus dependentes
+	 * Se houver algum dependente que venha antes da posição atual, a corretude foi comprometida
+	 * Retorna true se o programa está correto, false caso contrário
+	 * 
 	 */
-	boolean analisarCorretude(ArrayList<Instrucao> lista)
+	boolean analisarCorretude(ArrayList<Instrucao> listaDeInstrucoes)
 	{
-		for (int i = 0; i < lista.size(); i++)
+		for (int index = 0; index < listaDeInstrucoes.size(); index++)
 		{
-			for (int j = 0; j < lista.size(); j++)
+			for (int indexAux = 0; indexAux < listaDeInstrucoes.size(); indexAux++)
 			{
-				String s1 = lista.get(i).numeroDaInstrucao;
-				String s2 = lista.get(j).dependentes;
-				if (s2.contains(s1) && i < j)
+				String instrucaoDeFora = listaDeInstrucoes.get(index).dependentes;
+				String instrucaoDeDentro = listaDeInstrucoes.get(indexAux).numeroDaInstrucao;
+				if (instrucaoDeDentro.contains(instrucaoDeFora) && index < indexAux)
 				{
-					trouble = true;
+					podeTrocar = false;
 					return false;
 				}
 			}
 		}
-		
 		return true;
 	}	
 	
+	
 	/*
-	 * Não corrigida
+	 * Função responsável por ordenar as intruções por ordem do ciclo inicial
+	 * Recebe um arrayList de instruções e retorna-o ordenado
+	 * Percorre todo o arrayList buscando alguma instrução que esteja fora de ordem
+	 * A ordenação é mantida pela regra ciclo inicial de x > ciclo inicial de y <=> y -> x
+	 * Retorna um arrayList com as intruções ordenadas por ordem crescente do ciclo inicial
+	 * 
 	 */
-	public ArrayList<Instrucao> organizarInstrucoes(ArrayList<Instrucao> lista)
+	ArrayList<Instrucao> organizarInstrucoes(ArrayList<Instrucao> listaDeInstrucoes)
 	{
-		for (int i = 0; i < lista.size(); i++)
+		for (int index = 0; index < listaDeInstrucoes.size(); index++)
 		{
-			for (int j = 0; j < lista.size(); j++)
+			for (int indexAux = 0; indexAux < listaDeInstrucoes.size(); indexAux++)
 			{
-				if (lista.get(j).cicloInicial > lista.get(i).cicloInicial)
+				if (listaDeInstrucoes.get(indexAux).cicloInicial > listaDeInstrucoes.get(index).cicloInicial)
 				{
-					trocarPosicao(lista, i, j);
+					trocarPosicao(listaDeInstrucoes, index, indexAux);
 				}
 			}
 		}
-		
-		return lista;
+		return listaDeInstrucoes;
 	}
 	
+	
 	/*
-	 * Não corrigida
+	 * Função responsável por fazer o reordenamento reordenar as instruções
+	 * Percorre todo o arrayList e testa instruções que podem ser reordenadas e pra qual nova posição ela pode ir
+	 * Recebe um arrayList de instruções
+	 * Cria um arrayList que servirá de buffer para reordenamento e começa o percorrimento pela ultima instrução
+	 * o percorrimento é feito do fim para o começo do vetor, verificando se a instrução atual pode ser trocada
+	 * pela anterior, sempre verificando a corretude, quando chegar em um ponto que a troca da posição não pode ser
+	 * feita, a instrução é realocada pra ultima posição que pode ser inserida
+	 * Se o reordenamento for produtivo (total de ciclos menor), retorna o arrayList usado como buffer
+	 * caso contrario, retorna a lista do jeito que foi passada
+	 * 
 	 */
-	public ArrayList<Instrucao> buscarInstrucoesSemConflito(ArrayList<Instrucao> lista)
+	ArrayList<Instrucao> reordenarInstrucoes(ArrayList<Instrucao> listaDeInstrucoes)
 	{
-		System.out.println(">>> Busca por instruções que não dependam de anteriores iniciada <<<");
-		ArrayList<Instrucao> nova = clonarLista(lista);
-		int tempo = lista.get(lista.size()-1).cicloInicial;
-		int cont = 0;
+		System.out.println(">>> Reordenamento de instrucoes iniciado <<<");
+		ArrayList<Instrucao> buffer = clonarLista(listaDeInstrucoes);
+		int totalDeCiclosAntigo = listaDeInstrucoes.get(listaDeInstrucoes.size()-1).cicloInicial + 4;
+		int instrucoesReordenadas = 0;
 		
-		//buscar e inserir instruções sem conflito
-		for (int i = lista.size()-1 ; i >= instrucoesIndependentes; i--)
+		for (int index = listaDeInstrucoes.size()-1 ; index >= instrucoesIndependentes; index--)
 		{
-			String antigo = lista.get(i).numeroDaInstrucao;
-			for (int j = i-1; j >= instrucoesIndependentes; j--)
+			String instrucaoAntesDoOrdenamento = listaDeInstrucoes.get(index).numeroDaInstrucao;
+			for (int indexAux = index-1; indexAux >= instrucoesIndependentes; indexAux--)
 			{	
-				String s1 = lista.get(i).numeroDaInstrucao;
-				String s2 = lista.get(j).dependentes;
-				if (s2.contains(s1))
+				String dependentes = listaDeInstrucoes.get(indexAux).dependentes;
+				String instrucaoDeFora = listaDeInstrucoes.get(index).numeroDaInstrucao;
+				if (dependentes.contains(instrucaoDeFora))
 				{
-					trouble = true;
+					podeTrocar = false;
 					break;
 				}
 				else
 				{
-					int atual = j+1;
-					trocarPosicao(nova, atual, atual-1);
-					simularCiclos(nova);
-					while(buscarConflitoAuxiliar(nova, atual-1) == true && atual > 1)
+					int posicaoAtualDaInstrucao = indexAux+1;
+					trocarPosicao(buffer, posicaoAtualDaInstrucao, posicaoAtualDaInstrucao-1);
+					simularCiclos(buffer);
+					while(buscarConflitoAuxiliar(buffer, posicaoAtualDaInstrucao-1) == true && posicaoAtualDaInstrucao > 1)
 					{
-						if (!analisarCorretude(nova) || !verificarFalsaDependecia(nova))
+						if (!analisarCorretude(buffer) || !corrigirFalsasDependecias(buffer))
 						{
-							trouble = true;
+							podeTrocar = false;
 							break;
 						}
-						atual--;
-						trocarPosicao(nova, atual-1, atual);
-						simularCiclos(nova);
+						posicaoAtualDaInstrucao--;
+						trocarPosicao(buffer, posicaoAtualDaInstrucao-1, posicaoAtualDaInstrucao);
+						simularCiclos(buffer);
 					}
-					if (trouble == true)
-						trocarPosicao(nova, atual, atual-1);
+					if (!podeTrocar)
+						trocarPosicao(buffer, posicaoAtualDaInstrucao, posicaoAtualDaInstrucao-1);
 				}
 			}
-			String novo = nova.get(i).numeroDaInstrucao;
-			if (antigo != novo)
-				cont++;
-			trouble = false;
+			String instrucaoDepoisDoOrdenamento = buffer.get(index).numeroDaInstrucao;
+			if (instrucaoAntesDoOrdenamento != instrucaoDepoisDoOrdenamento)
+				instrucoesReordenadas++;
+			podeTrocar = true;
 		}		
-		simularCiclos(nova);
+		simularCiclos(buffer);
 		
-		System.out.println("Foram encontradas " + cont + " instrucoes sem conflito");
-		System.out.println(">>> Busca de instruções nao conflitantes encerrada! <<<");
-		if (nova.get(nova.size()-1).cicloInicial < tempo)
-			return nova;
-		return lista;
+		System.out.println("Foram reordenada(s) " + instrucoesReordenadas + " instruções");
+		System.out.println(">>> Reordenamento encerrado! <<<\n");
+		if (buffer.get(buffer.size()-1).cicloInicial + 4 < totalDeCiclosAntigo)
+			return buffer;
+		return listaDeInstrucoes;
 	}
 
 	/*
-	 * Não corrigida
+	 * Função responsável por buscar e corrigir as falsas dependencias
+	 * Está é uma função interna, usada em conjunto com a analise de corretude no reordenamento
+	 * Recebe um arrayList de instruções e corrige as falsas dependencias se houver recursos necessários
+	 * Recebe um arrayList de instruções e retorna um booleano
+	 * Primeiro armazena a posicao das instruções que possuem falsas dependencias em um arrayList de quarentena
+	 * após saber quais instruções possuem falsas dependencias, percorre a lista afim de trocar o registrador da 
+	 * da instrução em quarentena, ao encontra-la busca um registrador vago no banco de registradores
+	 * se não houver, não é possivel corrigir todas falsas dependencias, retorna false indicando o ocorrido
+	 * caso exista, busca as instruções que dependem desta e atualiza seus registradores
+	 * Por final atualiza o banco de registradores para salvar as modificações e retorna true
+	 * 
 	 */
-	public boolean verificarFalsaDependecia(ArrayList<Instrucao> lista)
+	boolean corrigirFalsasDependecias(ArrayList<Instrucao> listaDeInstrucoes)
 	{
-		ArrayList<Integer> emQuarentena = new ArrayList<>();
-		for (int i = 0; i< lista.size(); i++)
+		ArrayList<Integer> instrucoesEmQuarentena = new ArrayList<>();
+		for (int index = 0; index< listaDeInstrucoes.size(); index++)
 		{
-			if(lista.get(i).dependenciaFalsa)
+			if(listaDeInstrucoes.get(index).dependenciaFalsa)
 			{
-				emQuarentena.add(i);
+				instrucoesEmQuarentena.add(index);
 			}
 		}
 		
-		for(int i = 0; i < emQuarentena.size(); i++)
+		for(int index = 0; index < instrucoesEmQuarentena.size(); index++)
 		{
-			for (int j = 0; j < lista.size(); j++)
+			for (int indexAux = 0; indexAux < listaDeInstrucoes.size(); indexAux++)
 			{
-				if(lista.get(emQuarentena.get(i)).destino.equals(lista.get(j).destino) && 
-						emQuarentena.get(i) >= j)
+				Instrucao instrucaoEmQuarentena = listaDeInstrucoes.get(instrucoesEmQuarentena.get(index));
+				if(instrucaoEmQuarentena.destino.equals(listaDeInstrucoes.get(indexAux).destino) && 
+						instrucoesEmQuarentena.get(index) >= indexAux)
 				{
-					Registrador antigo = lista.get(emQuarentena.get(i)).destino;
-					lista.get(emQuarentena.get(i)).destino = buscarNovoRegistrador();
-					if (lista.get(emQuarentena.get(i)).destino == null)
+					Registrador registradorAntigo = instrucaoEmQuarentena.destino;
+					instrucaoEmQuarentena.destino = buscarNovoRegistrador();
+					if (instrucaoEmQuarentena.destino == null)
 					{
-						lista.get(emQuarentena.get(i)).destino = antigo;
+						instrucaoEmQuarentena.destino = registradorAntigo;
 						return false;
 					}
 					else
 					{
-						for (int k = j; k < lista.size(); k++)
+						for (int posicao = indexAux; posicao < listaDeInstrucoes.size(); posicao++)
 						{
-							String s2 = lista.get(emQuarentena.get(i)).dependentes;
-							String s1 = lista.get(k).numeroDaInstrucao;
-							if (s2.contains(s1))
+							String dependentes = instrucaoEmQuarentena.dependentes;
+							String instrucaoAtual = listaDeInstrucoes.get(posicao).numeroDaInstrucao;
+							if (dependentes.contains(instrucaoAtual))
 							{
-								if (lista.get(k).operando1.nome.contains(antigo.nome))
+								if (listaDeInstrucoes.get(posicao).operando1.nome.contains(registradorAntigo.nome))
 								{
-									lista.get(k).operando1 = lista.get(emQuarentena.get(i)).destino;
+									listaDeInstrucoes.get(posicao).operando1 = instrucaoEmQuarentena.destino;
 								}
-								if (lista.get(k).operando2.nome.contains(antigo.nome))
+								if (listaDeInstrucoes.get(posicao).operando2.nome.contains(registradorAntigo.nome))
 								{
-									lista.get(k).operando2 = lista.get(emQuarentena.get(i)).destino;
+									listaDeInstrucoes.get(posicao).operando2 = instrucaoEmQuarentena.destino;
 								}
 							}
 						}
 					}
-					atualizarBancoDeRegistradores(lista);
+					atualizarBancoDeRegistradores(listaDeInstrucoes);
 				}
 			}
 		}
 		return true;
 	}
 
+	
 	/*
-	 * Não corrigida
+	 * Função responsável por buscar um registrador vago no banco de registradores
+	 * Está função é interna, chamada na correção de falsas dependencias para pegar um novo registrador
+	 * Percorre o banco de registradores buscando um não usado e o retorna
+	 * Caso não exista, retorna null
+	 * 
 	 */
-	public Registrador buscarNovoRegistrador()
+	Registrador buscarNovoRegistrador()
 	{
-		for(int i = 0; i < conjuntoDeRegistradores.size(); i++)
+		for(int index = 0; index < conjuntoDeRegistradores.size(); index++)
 		{
-			if (!conjuntoDeRegistradores.get(i).ehEscrito && !conjuntoDeRegistradores.get(i).ehLido)
+			if (!conjuntoDeRegistradores.get(index).ehEscrito && !conjuntoDeRegistradores.get(index).ehLido)
 			{
-				return conjuntoDeRegistradores.get(i);
+				return conjuntoDeRegistradores.get(index);
 			}
 		}
-		
 		return null;
 	}
 }
