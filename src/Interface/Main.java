@@ -9,6 +9,6 @@ public class Main
 		Funcoes teste = new Funcoes();
 		String caminho = "src/grafo.txt";
 		String saida = "src/instruções reordenadas.txt";
-		teste.reordenar(caminho, saida);
+		teste.reordenar(caminho);
 	}
 }
