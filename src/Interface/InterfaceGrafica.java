@@ -1,14 +1,14 @@
 package Interface;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -21,9 +21,10 @@ public class InterfaceGrafica extends Application {
 	private Stage primaryStage;
 	private BorderPane painelInicial;
 	private ObservableList<Instrucao> listaDeInstrucoes = FXCollections.observableArrayList();
-	public ArrayList<Instrucao> buffer = new ArrayList<>();
 	public Funcoes funcoes = new Funcoes();
 	String path = "";
+	Alert alerta = new Alert(AlertType.WARNING);
+	Alert notificacao = new Alert(AlertType.INFORMATION);
 	
 	public InterfaceGrafica()
 	{		
@@ -40,16 +41,6 @@ public class InterfaceGrafica extends Application {
 	{
 		this.primaryStage = primaryStage;
         this.primaryStage.setTitle("Reordenador de instruções");
-        /*
-        ArrayList<Instrucao> buffer = funcoes.lerGrafo(funcoes.reordenar("src/grafo.txt", "grafo com interface.txt"));
-        
-        listaDeInstrucoes.clear();
-        
-        for (int index = 0; index < buffer.size(); index++)
-		{
-			listaDeInstrucoes.add(buffer.get(index));
-		}
-        /**/
         initTelaInicial();
 
         mostrarTabela();

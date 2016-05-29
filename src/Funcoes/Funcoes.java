@@ -18,18 +18,8 @@ public class Funcoes
 	int instrucoesIndependentes = 0;
 	boolean podeTrocar = true;
 	ArrayList<Registrador> conjuntoDeRegistradores = new ArrayList<>();
-	
-	public ArrayList<Instrucao> reordenar(String caminho)
-	{
-		ArrayList<Instrucao> buffer = lerGrafo(caminho);
-		buffer = buscarInstrucoesIndependentes(buffer);
-		buffer = reordenarInstrucoes(buffer);
-		buffer = organizarInstrucoes(buffer);
-		mostrarInstrucoes(buffer);
+	public ArrayList<Instrucao> bufferDeInstrucoes = new ArrayList<>();
 		
-		return buffer;
-	}
-	
 	/*
 	 * Função responsável por criar o banco de registradores
 	 * Função interna chamada na leitura do grafo
@@ -38,7 +28,7 @@ public class Funcoes
 	 * Preenche a variavel global "Conjunto de Registradores" com o nome dos registradores do .txt
 	 * 
 	 */
-	void criarBancoDeRegistradores(String registradores)
+ 	void criarBancoDeRegistradores(String registradores)
 	{
 		System.out.println(">>> Inicializando banco de registradores <<<");
 		try
@@ -79,16 +69,16 @@ public class Funcoes
 	 * Recebe uma lista de instruções
 	 * 
 	 */
-	void resetarRegistradores(ArrayList<Instrucao> instrucoes)
+	void resetarRegistradores()
 	{
 		for (int index = 0; index < conjuntoDeRegistradores.size(); index++)
 		{
 			conjuntoDeRegistradores.get(index).setEscrito(false);
 			conjuntoDeRegistradores.get(index).setLido(false);
 		}
-		for (int index = 0; index < instrucoes.size(); index++)
+		for (int index = 0; index < bufferDeInstrucoes.size(); index++)
 		{
-			instrucoes.get(index).setDependenciaFalsa(false);
+			bufferDeInstrucoes.get(index).setDependenciaFalsa(false);
 		}
 	}
 	
@@ -101,23 +91,23 @@ public class Funcoes
 	 * Atualiza os campos "eh escrito" e "eh lido" do registrador e o alerta sobre falsas dependencias da instrução
 	 * 
 	 */
-	void atualizarBancoDeRegistradores(ArrayList<Instrucao> instrucoes)
+	void atualizarBancoDeRegistradores()
 	{		
-		resetarRegistradores(instrucoes);
-		for (int index = 0; index < instrucoes.size(); index++)
+		resetarRegistradores();
+		for (int index = 0; index < bufferDeInstrucoes.size(); index++)
 		{
 			for (int indexAux = 0; indexAux < conjuntoDeRegistradores.size(); indexAux++)
 			{
-				String destinoDaInstrucao = instrucoes.get(index).getDestino().getNome();
-				String operando1DaInstrucao = instrucoes.get(index).getOperando1().getNome();
-				String operando2DaInstrucao = instrucoes.get(index).getOperando2().getNome();
+				String destinoDaInstrucao = bufferDeInstrucoes.get(index).getDestino().getNome();
+				String operando1DaInstrucao = bufferDeInstrucoes.get(index).getOperando1().getNome();
+				String operando2DaInstrucao = bufferDeInstrucoes.get(index).getOperando2().getNome();
 				String registrador = conjuntoDeRegistradores.get(indexAux).getNome();
 				
 				if (destinoDaInstrucao.equals(registrador))
 				{
 					if (conjuntoDeRegistradores.get(indexAux).isEscrito())
 					{
-						instrucoes.get(index).setDependenciaFalsa(true);
+						bufferDeInstrucoes.get(index).setDependenciaFalsa(true);
 					}
 					conjuntoDeRegistradores.get(indexAux).setEscrito(true);
 				}
@@ -141,7 +131,6 @@ public class Funcoes
 	public ArrayList<Instrucao> lerGrafo(String grafo)
 	{
 		System.out.println(">>> Leitura do grafo iniciada <<<");
-		ArrayList<Instrucao> instrucoes = new ArrayList<>();
 		try
 		{
 			/*
@@ -158,13 +147,13 @@ public class Funcoes
 			
 			while (linha != null)
 			{
-				instrucoes.add((criarInstrucao(linha)));
+				bufferDeInstrucoes.add((criarInstrucao(linha)));
 				linha = readerBuffer.readLine();
 			}
 			readerBuffer.close();
 			criarBancoDeRegistradores("src/registradores.txt");
-			atualizarBancoDeRegistradores(instrucoes);
-			return instrucoes;
+			atualizarBancoDeRegistradores();
+			return bufferDeInstrucoes;
 		}
 		catch (IOException exception)
 		{
@@ -188,7 +177,7 @@ public class Funcoes
 	 * Retorna a instrução lida
 	 * 
 	 */
-	public Instrucao criarInstrucao(String linha)
+	Instrucao criarInstrucao(String linha)
 	{
 		int contadorDeTab = 0;
 		Instrucao instrucao = new Instrucao();
@@ -239,7 +228,7 @@ public class Funcoes
 	 * Percorre o arrayList passado na entrada e a cada indice escreve seus atributos na linha do arquivo
 	 * Retorna o caminho do arquivo de saida
 	 */
-	public String salvarGrafo(ArrayList<Instrucao> lista, String localParaArmazenamento)
+	public String salvarGrafo(String localParaArmazenamento)
 	{
 		System.out.println(">>> Gerando novo grafo <<<");
 		
@@ -247,17 +236,18 @@ public class Funcoes
 		{
 			PrintWriter escrever = new PrintWriter(new FileWriter(localParaArmazenamento));
 			escrever.println("#inst 	tipo	dest 	op1 	op2 	#inst_recebe_resultado	Ciclo_Inicial	Falsa_Dependencia");
-			for (int index = 0; index < lista.size(); index++)
+			for (int index = 0; index < bufferDeInstrucoes.size(); index++)
 			{
 				
-				escrever.print(lista.get(index).getNumeroDaInstrucao() + "\t");
-				escrever.print(lista.get(index).getOperacao() + "\t");
-				escrever.print(lista.get(index).getDestino().getNome() + "\t");
-				escrever.print(lista.get(index).getOperando1().getNome() + "\t");
-				escrever.print(lista.get(index).getOperando2().getNome() + "\t");
-				escrever.print(lista.get(index).getDependentes() + "\t");
-				escrever.print(lista.get(index).getCicloInicial() + "\t");
-				escrever.print(lista.get(index).getDependenciaFalsa() + "\n");
+				escrever.print(bufferDeInstrucoes.get(index).getNumeroDaInstrucao() + "\t");
+				escrever.print(bufferDeInstrucoes.get(index).getOperacao() + "\t");
+				escrever.print(bufferDeInstrucoes.get(index).getDestino().getNome() + "\t");
+				escrever.print(bufferDeInstrucoes.get(index).getOperando1().getNome() + "\t");
+				escrever.print(bufferDeInstrucoes.get(index).getOperando2().getNome() + "\t");
+				escrever.print(bufferDeInstrucoes.get(index).getDependentes() + "\t");
+				escrever.print(bufferDeInstrucoes.get(index).getCicloInicial() + "\t");
+				escrever.print(bufferDeInstrucoes.get(index).getDependenciaFalsa());
+				escrever.println();
 			}
 			escrever.close();
 			System.out.println("Arquivo gerado com sucesso e salvo em: " + localParaArmazenamento);
@@ -286,18 +276,18 @@ public class Funcoes
 	 * Retorna a lista criada
 	 * 
 	 */
-	ArrayList<Instrucao> buscarInstrucoesIndependentes(ArrayList<Instrucao> listaDeInstrucoes)
+	public void buscarInstrucoesIndependentes()
 	{
 		System.out.println(">>> Busca por instruções independentes iniciada <<<");
 		boolean indepentente = true;
 		ArrayList<Instrucao> bufferDaLista = new ArrayList<>();
 		//buscar e inserir instruções independentes
-		for (int index = 0; index < listaDeInstrucoes.size(); index++)
+		for (int index = 0; index < bufferDeInstrucoes.size(); index++)
 		{
-			for (int indexAux = 0; indexAux < listaDeInstrucoes.size(); indexAux++)
+			for (int indexAux = 0; indexAux < bufferDeInstrucoes.size(); indexAux++)
 			{	
-				String instrucaoDeDentro = listaDeInstrucoes.get(indexAux).getDependentes();
-				String instrucaoDeFora = listaDeInstrucoes.get(index).getNumeroDaInstrucao();
+				String instrucaoDeDentro = bufferDeInstrucoes.get(indexAux).getDependentes();
+				String instrucaoDeFora = bufferDeInstrucoes.get(index).getNumeroDaInstrucao();
 				if (instrucaoDeDentro.contains(instrucaoDeFora))
 				{
 					indepentente = false;
@@ -306,17 +296,17 @@ public class Funcoes
 			}
 			if (indepentente)
 			{
-				bufferDaLista.add(listaDeInstrucoes.get(index));
+				bufferDaLista.add(bufferDeInstrucoes.get(index));
 				instrucoesIndependentes++;
 			}
 			indepentente = true;
 		}
 		//Inserir instruções com dependencias
-		for (int index = 0; index < listaDeInstrucoes.size(); index++)
+		for (int index = 0; index < bufferDeInstrucoes.size(); index++)
 		{
 			for (int indexAux = 0; indexAux < bufferDaLista.size(); indexAux++)
 			{
-				if (listaDeInstrucoes.get(index).getNumeroDaInstrucao() == bufferDaLista.get(indexAux).getNumeroDaInstrucao())
+				if (bufferDeInstrucoes.get(index).getNumeroDaInstrucao() == bufferDaLista.get(indexAux).getNumeroDaInstrucao())
 				{
 					indepentente = true;
 					break;
@@ -324,14 +314,13 @@ public class Funcoes
 			}
 			if (!indepentente)
 			{
-				bufferDaLista.add(listaDeInstrucoes.get(index));
+				bufferDaLista.add(bufferDeInstrucoes.get(index));
 			}
 			indepentente = false;
 			
 		}
 		System.out.println("Foram encontradas " + instrucoesIndependentes + " instrucoes independentes");
 		System.out.println(">>> Busca de instruções independentes encerrada! <<<\n");
-		return bufferDaLista;
 	}
 	
 	/*
@@ -341,20 +330,20 @@ public class Funcoes
 	 * Inicializa o campo de ciclo inicial das instruções
 	 * 
 	 */
-	void simularCiclos(ArrayList<Instrucao> listaDeInstrucoes)
+	void simularCiclos()
 	{
-		for (int index = 0; index < listaDeInstrucoes.size(); index++)
+		for (int index = 0; index < bufferDeInstrucoes.size(); index++)
 		{
-			listaDeInstrucoes.get(index).setCicloInicial(index);
+			bufferDeInstrucoes.get(index).setCicloInicial(index);
 		}
 		
 		int cicloAtual = 1;
-		for (int index = 1; index < listaDeInstrucoes.size(); index++)
+		for (int index = 1; index < bufferDeInstrucoes.size(); index++)
 		{
 			for (int indexAux = index-1; indexAux >= 0; indexAux--)
 			{
-				String instrucaoDeFora = listaDeInstrucoes.get(index).getNumeroDaInstrucao();
-				String instrucaoDeDentro = listaDeInstrucoes.get(indexAux).getDependentes();
+				String instrucaoDeFora = bufferDeInstrucoes.get(index).getNumeroDaInstrucao();
+				String instrucaoDeDentro = bufferDeInstrucoes.get(indexAux).getDependentes();
 				
 				if (instrucaoDeFora.contains(instrucaoDeDentro))
 				{
@@ -362,7 +351,7 @@ public class Funcoes
 					boolean podeInserir = false;
 					while (!podeInserir)
 					{
-						tempo = cicloAtual - listaDeInstrucoes.get(indexAux).getCicloInicial();
+						tempo = cicloAtual - bufferDeInstrucoes.get(indexAux).getCicloInicial();
 						if (tempo > 2)
 						{
 							podeInserir = true;
@@ -374,7 +363,7 @@ public class Funcoes
 					}
 				}
 			}
-			listaDeInstrucoes.get(index).setCicloInicial(cicloAtual);
+			bufferDeInstrucoes.get(index).setCicloInicial(cicloAtual);
 			cicloAtual++;
 		}
 	}
@@ -389,15 +378,15 @@ public class Funcoes
 	 * Retorna true, caso a troca da posição das instruções não gere conflito e false caso contrário
 	 *
 	 */
-	boolean buscarConflitoAuxiliar(ArrayList<Instrucao> lista, int comeco)
+	boolean buscarConflitoAuxiliar(int comeco)
 	{
 		//buscar e inserir instruções sem conflito
 		int index = comeco;
 		for (int indexAux = index-1; indexAux >= 0; indexAux--)
 		{	
-			String instrucaoReordenada = lista.get(index).getNumeroDaInstrucao();
-			String instrucaoAtual = lista.get(indexAux).getDependentes();
-			int tempo = lista.get(index).getCicloInicial() - lista.get(indexAux).getCicloInicial();
+			String instrucaoReordenada = bufferDeInstrucoes.get(index).getNumeroDaInstrucao();
+			String instrucaoAtual = bufferDeInstrucoes.get(indexAux).getDependentes();
+			int tempo = bufferDeInstrucoes.get(index).getCicloInicial() - bufferDeInstrucoes.get(indexAux).getCicloInicial();
 			if (instrucaoAtual.contains(instrucaoReordenada) && tempo < 3)
 			{
 				podeTrocar = false;
@@ -414,11 +403,11 @@ public class Funcoes
 	 * Armazena a instrução da posição x em um buffer e troca x com y e em seguida y com o buffer
 	 * 
 	 */
-	void trocarPosicao(ArrayList<Instrucao> lista, int x, int y)
+	void trocarPosicao(int x, int y)
 	{
-		Instrucao buffer = lista.get(y);
-		lista.set(y, lista.get(x));
-		lista.set(x, buffer);
+		Instrucao buffer = bufferDeInstrucoes.get(y);
+		bufferDeInstrucoes.set(y, bufferDeInstrucoes.get(x));
+		bufferDeInstrucoes.set(x, buffer);
 	}
 	
 	/*
@@ -449,22 +438,22 @@ public class Funcoes
 	 * Percorre o arrayList passado como parâmetro e imprime todos os campos de sua instrução, uma por uma
 	 * 
 	 */
-	public void mostrarInstrucoes(ArrayList<Instrucao> listaDeInstrucoes)
+	public void mostrarInstrucoes()
 	{
 		System.out.println(">>> Exibindo grafo <<<");
 		System.out.println();
 		System.out.println("#inst 	tipo	dest 	op1 	op2 	#inst_recebe_resultado	Ciclo_Inicial"
 				+ "	Falsa_Dependencia");
-		for (int index = 0; index < listaDeInstrucoes.size(); index++)
+		for (int index = 0; index < bufferDeInstrucoes.size(); index++)
 		{
-			System.out.print(listaDeInstrucoes.get(index).getNumeroDaInstrucao() + "\t");
-			System.out.print(listaDeInstrucoes.get(index).getOperacao() + "\t");
-			System.out.print(listaDeInstrucoes.get(index).getDestino().getNome() + "\t");
-			System.out.print(listaDeInstrucoes.get(index).getOperando1().getNome() + "\t");
-			System.out.print(listaDeInstrucoes.get(index).getOperando2().getNome() + "\t\t");
-			System.out.print(listaDeInstrucoes.get(index).getDependentes() + "\t\t\t");
-			System.out.print(listaDeInstrucoes.get(index).getCicloInicial() + "\t\t");
-			System.out.print(listaDeInstrucoes.get(index).getDependenciaFalsa() + "\n");
+			System.out.print(bufferDeInstrucoes.get(index).getNumeroDaInstrucao() + "\t");
+			System.out.print(bufferDeInstrucoes.get(index).getOperacao() + "\t");
+			System.out.print(bufferDeInstrucoes.get(index).getDestino().getNome() + "\t");
+			System.out.print(bufferDeInstrucoes.get(index).getOperando1().getNome() + "\t");
+			System.out.print(bufferDeInstrucoes.get(index).getOperando2().getNome() + "\t\t");
+			System.out.print(bufferDeInstrucoes.get(index).getDependentes() + "\t\t\t");
+			System.out.print(bufferDeInstrucoes.get(index).getCicloInicial() + "\t\t");
+			System.out.print(bufferDeInstrucoes.get(index).getDependenciaFalsa() + "\n");
 		}
 		System.out.println();
 		System.out.println(">>> Exibicao encerrada! <<<\n");
@@ -479,14 +468,14 @@ public class Funcoes
 	 * Retorna true se o programa está correto, false caso contrário
 	 * 
 	 */
-	boolean analisarCorretude(ArrayList<Instrucao> listaDeInstrucoes)
+	boolean analisarCorretude()
 	{
-		for (int index = 0; index < listaDeInstrucoes.size(); index++)
+		for (int index = 0; index < bufferDeInstrucoes.size(); index++)
 		{
-			for (int indexAux = 0; indexAux < listaDeInstrucoes.size(); indexAux++)
+			for (int indexAux = 0; indexAux < bufferDeInstrucoes.size(); indexAux++)
 			{
-				String instrucaoDeFora = listaDeInstrucoes.get(index).getDependentes();
-				String instrucaoDeDentro = listaDeInstrucoes.get(indexAux).getNumeroDaInstrucao();
+				String instrucaoDeFora = bufferDeInstrucoes.get(index).getDependentes();
+				String instrucaoDeDentro = bufferDeInstrucoes.get(indexAux).getNumeroDaInstrucao();
 				if (instrucaoDeDentro.contains(instrucaoDeFora) && index < indexAux)
 				{
 					podeTrocar = false;
@@ -505,19 +494,19 @@ public class Funcoes
 	 * Retorna um arrayList com as intruções ordenadas por ordem crescente do ciclo inicial
 	 * 
 	 */
-	ArrayList<Instrucao> organizarInstrucoes(ArrayList<Instrucao> listaDeInstrucoes)
+	ArrayList<Instrucao> organizarInstrucoes()
 	{
-		for (int index = 0; index < listaDeInstrucoes.size(); index++)
+		for (int index = 0; index < bufferDeInstrucoes.size(); index++)
 		{
-			for (int indexAux = 0; indexAux < listaDeInstrucoes.size(); indexAux++)
+			for (int indexAux = 0; indexAux < bufferDeInstrucoes.size(); indexAux++)
 			{
-				if (listaDeInstrucoes.get(indexAux).getCicloInicial() > listaDeInstrucoes.get(index).getCicloInicial())
+				if (bufferDeInstrucoes.get(indexAux).getCicloInicial() > bufferDeInstrucoes.get(index).getCicloInicial())
 				{
-					trocarPosicao(listaDeInstrucoes, index, indexAux);
+					trocarPosicao(index, indexAux);
 				}
 			}
 		}
-		return listaDeInstrucoes;
+		return bufferDeInstrucoes;
 	}
 	
 	/*
@@ -532,20 +521,20 @@ public class Funcoes
 	 * caso contrario, retorna a lista do jeito que foi passada
 	 * 
 	 */
-	ArrayList<Instrucao> reordenarInstrucoes(ArrayList<Instrucao> listaDeInstrucoes)
+	public void reordenarInstrucoes()
 	{
 		System.out.println(">>> Reordenamento de instrucoes iniciado <<<");
-		ArrayList<Instrucao> buffer = clonarLista(listaDeInstrucoes);
-		int totalDeCiclosAntigo = listaDeInstrucoes.get(listaDeInstrucoes.size()-1).getCicloInicial() + 4;
+		ArrayList<Instrucao> listaAntiga = clonarLista(bufferDeInstrucoes);
+		int totalDeCiclosAntigo = listaAntiga.get(listaAntiga.size()-1).getCicloInicial() + 4;
 		int instrucoesReordenadas = 0;
 		
-		for (int index = listaDeInstrucoes.size()-1 ; index >= instrucoesIndependentes; index--)
+		for (int index = bufferDeInstrucoes.size()-1 ; index >= instrucoesIndependentes; index--)
 		{
-			String instrucaoAntesDoOrdenamento = listaDeInstrucoes.get(index).getNumeroDaInstrucao();
+			String instrucaoAntesDoOrdenamento = bufferDeInstrucoes.get(index).getNumeroDaInstrucao();
 			for (int indexAux = index-1; indexAux >= instrucoesIndependentes; indexAux--)
 			{	
-				String dependentes = listaDeInstrucoes.get(indexAux).getDependentes();
-				String instrucaoDeFora = listaDeInstrucoes.get(index).getNumeroDaInstrucao();
+				String dependentes = bufferDeInstrucoes.get(indexAux).getDependentes();
+				String instrucaoDeFora = bufferDeInstrucoes.get(index).getNumeroDaInstrucao();
 				if (dependentes.contains(instrucaoDeFora))
 				{
 					podeTrocar = false;
@@ -554,35 +543,34 @@ public class Funcoes
 				else
 				{
 					int posicaoAtualDaInstrucao = indexAux+1;
-					trocarPosicao(buffer, posicaoAtualDaInstrucao, posicaoAtualDaInstrucao-1);
-					simularCiclos(buffer);
-					while(buscarConflitoAuxiliar(buffer, posicaoAtualDaInstrucao-1) == true && posicaoAtualDaInstrucao > 1)
+					trocarPosicao(posicaoAtualDaInstrucao, posicaoAtualDaInstrucao-1);
+					simularCiclos();
+					while(buscarConflitoAuxiliar(posicaoAtualDaInstrucao-1) == true && posicaoAtualDaInstrucao > 1)
 					{
-						if (!analisarCorretude(buffer) || !corrigirFalsasDependecias(buffer))
+						if (!analisarCorretude() || !corrigirFalsasDependecias())
 						{
 							podeTrocar = false;
 							break;
 						}
 						posicaoAtualDaInstrucao--;
-						trocarPosicao(buffer, posicaoAtualDaInstrucao-1, posicaoAtualDaInstrucao);
-						simularCiclos(buffer);
+						trocarPosicao(posicaoAtualDaInstrucao-1, posicaoAtualDaInstrucao);
+						simularCiclos();
 					}
 					if (!podeTrocar)
-						trocarPosicao(buffer, posicaoAtualDaInstrucao, posicaoAtualDaInstrucao-1);
+						trocarPosicao(posicaoAtualDaInstrucao, posicaoAtualDaInstrucao-1);
 				}
 			}
-			String instrucaoDepoisDoOrdenamento = buffer.get(index).getNumeroDaInstrucao();
+			String instrucaoDepoisDoOrdenamento = bufferDeInstrucoes.get(index).getNumeroDaInstrucao();
 			if (instrucaoAntesDoOrdenamento != instrucaoDepoisDoOrdenamento)
 				instrucoesReordenadas++;
 			podeTrocar = true;
 		}		
-		simularCiclos(buffer);
+		simularCiclos();
 		
 		System.out.println("Foram reordenada(s) " + instrucoesReordenadas + " instruções");
 		System.out.println(">>> Reordenamento encerrado! <<<\n");
-		if (buffer.get(buffer.size()-1).getCicloInicial() + 4 < totalDeCiclosAntigo)
-			return buffer;
-		return listaDeInstrucoes;
+		if (bufferDeInstrucoes.get(bufferDeInstrucoes.size()-1).getCicloInicial() + 4 > totalDeCiclosAntigo)
+			bufferDeInstrucoes = clonarLista(listaAntiga);
 	}
 
 	/*
@@ -598,12 +586,12 @@ public class Funcoes
 	 * Por final atualiza o banco de registradores para salvar as modificações e retorna true
 	 * 
 	 */
-	boolean corrigirFalsasDependecias(ArrayList<Instrucao> listaDeInstrucoes)
+	public boolean corrigirFalsasDependecias()
 	{
 		ArrayList<Integer> instrucoesEmQuarentena = new ArrayList<>();
-		for (int index = 0; index< listaDeInstrucoes.size(); index++)
+		for (int index = 0; index< bufferDeInstrucoes.size(); index++)
 		{
-			if(listaDeInstrucoes.get(index).getDependenciaFalsa())
+			if(bufferDeInstrucoes.get(index).getDependenciaFalsa())
 			{
 				instrucoesEmQuarentena.add(index);
 			}
@@ -611,10 +599,10 @@ public class Funcoes
 		
 		for(int index = 0; index < instrucoesEmQuarentena.size(); index++)
 		{
-			for (int indexAux = 0; indexAux < listaDeInstrucoes.size(); indexAux++)
+			for (int indexAux = 0; indexAux < bufferDeInstrucoes.size(); indexAux++)
 			{
-				Instrucao instrucaoEmQuarentena = listaDeInstrucoes.get(instrucoesEmQuarentena.get(index));
-				if(instrucaoEmQuarentena.getDestino().getNome().equals(listaDeInstrucoes.get(indexAux).getDestino().getNome()) && 
+				Instrucao instrucaoEmQuarentena = bufferDeInstrucoes.get(instrucoesEmQuarentena.get(index));
+				if(instrucaoEmQuarentena.getDestino().getNome().equals(bufferDeInstrucoes.get(indexAux).getDestino().getNome()) && 
 						instrucoesEmQuarentena.get(index) >= indexAux)
 				{
 					Registrador registradorAntigo = instrucaoEmQuarentena.getDestino();
@@ -626,24 +614,24 @@ public class Funcoes
 					}
 					else
 					{
-						for (int posicao = indexAux; posicao < listaDeInstrucoes.size(); posicao++)
+						for (int posicao = indexAux; posicao < bufferDeInstrucoes.size(); posicao++)
 						{
 							String dependentes = instrucaoEmQuarentena.getDependentes();
-							String instrucaoAtual = listaDeInstrucoes.get(posicao).getNumeroDaInstrucao();
+							String instrucaoAtual = bufferDeInstrucoes.get(posicao).getNumeroDaInstrucao();
 							if (dependentes.contains(instrucaoAtual))
 							{
-								if (listaDeInstrucoes.get(posicao).getOperando1().getNome().contains(registradorAntigo.getNome()))
+								if (bufferDeInstrucoes.get(posicao).getOperando1().getNome().contains(registradorAntigo.getNome()))
 								{
-									listaDeInstrucoes.get(posicao).setOperando1(instrucaoEmQuarentena.getDestino());
+									bufferDeInstrucoes.get(posicao).setOperando1(instrucaoEmQuarentena.getDestino());
 								}
-								if (listaDeInstrucoes.get(posicao).getOperando2().getNome().contains(registradorAntigo.getNome()))
+								if (bufferDeInstrucoes.get(posicao).getOperando2().getNome().contains(registradorAntigo.getNome()))
 								{
-									listaDeInstrucoes.get(posicao).setOperando2(instrucaoEmQuarentena.getDestino());
+									bufferDeInstrucoes.get(posicao).setOperando2(instrucaoEmQuarentena.getDestino());
 								}
 							}
 						}
 					}
-					atualizarBancoDeRegistradores(listaDeInstrucoes);
+					atualizarBancoDeRegistradores();
 				}
 			}
 		}

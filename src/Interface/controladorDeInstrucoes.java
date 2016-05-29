@@ -1,12 +1,7 @@
 package Interface;
 
 import java.io.File;
-import java.util.ArrayList;
-
 import Estruturas.Instrucao;
-import Funcoes.Funcoes;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -74,47 +69,136 @@ public class controladorDeInstrucoes
     @FXML
     private void handleAbrir() 
     {
-    	//ObservableList<Instrucao> listaDeInstrucoes = FXCollections.observableArrayList();
     	FileChooser escolherArquivo = new FileChooser();
     	escolherArquivo.setTitle("Open Resource File");
     	File arquivo = escolherArquivo.showOpenDialog(null);
     	if (arquivo != null)
     	{
+    		interfaceGrafica.funcoes.bufferDeInstrucoes.clear();
     		interfaceGrafica.path = arquivo.getAbsolutePath();
-    		interfaceGrafica.buffer = interfaceGrafica.funcoes.lerGrafo(arquivo.getAbsolutePath());
-    		interfaceGrafica.funcoes.mostrarInstrucoes(interfaceGrafica.buffer);
-    		for (int index = 0; index < interfaceGrafica.buffer.size(); index++)
+    		interfaceGrafica.funcoes.lerGrafo(arquivo.getAbsolutePath());
+    		interfaceGrafica.funcoes.mostrarInstrucoes();
+    		if (interfaceGrafica.getlistaDeInstrucoes().size() > 0)
     		{
-    			interfaceGrafica.getlistaDeInstrucoes().add(interfaceGrafica.buffer.get(index));
+    			interfaceGrafica.getlistaDeInstrucoes().clear();
     		}
+    		for (int index = 0; index < interfaceGrafica.funcoes.bufferDeInstrucoes.size(); index++)
+    		{
+    			interfaceGrafica.getlistaDeInstrucoes().add(interfaceGrafica.funcoes.bufferDeInstrucoes.get(index));
+    		}
+    	}
+    	else
+    	{
+    		interfaceGrafica.alerta.setTitle("ERROR");
+    		interfaceGrafica.alerta.setContentText("Falha ao abrir o arquivo");
+    		interfaceGrafica.alerta.setHeaderText("Arquivo inválido");
+    		interfaceGrafica.alerta.showAndWait();
     	}
     }
     
     @FXML
-    private void handleReordenar()
+    private void handleReordenarInstrucoes()
     {
-    	interfaceGrafica.buffer = interfaceGrafica.funcoes.reordenar(interfaceGrafica.path);
-    	interfaceGrafica.getlistaDeInstrucoes().clear();
-    	
-    	for (int index = 0; index < interfaceGrafica.buffer.size(); index++)
-		{
-			interfaceGrafica.getlistaDeInstrucoes().add(interfaceGrafica.buffer.get(index));
-		}
+    	if (interfaceGrafica.funcoes.bufferDeInstrucoes.size() > 0)
+    	{
+    		interfaceGrafica.funcoes.buscarInstrucoesIndependentes();
+        	interfaceGrafica.funcoes.reordenarInstrucoes();
+        	interfaceGrafica.getlistaDeInstrucoes().clear();
+        	
+        	for (int index = 0; index < interfaceGrafica.funcoes.bufferDeInstrucoes.size(); index++)
+    		{
+    			interfaceGrafica.getlistaDeInstrucoes().add(interfaceGrafica.funcoes.bufferDeInstrucoes.get(index));
+    		}
+    	}
+    	else
+    	{
+    		interfaceGrafica.alerta.setTitle("ERROR");
+    		interfaceGrafica.alerta.setContentText("Falha executar instrução");
+    		interfaceGrafica.alerta.setHeaderText("Nenhum grafo selecionado");
+    		interfaceGrafica.alerta.showAndWait();
+    	}
+    }
+
+    @FXML
+    private void handleRenomearRegistradores()
+    {
+    	if (interfaceGrafica.funcoes.bufferDeInstrucoes.size() > 0)
+    	{
+    		interfaceGrafica.funcoes.corrigirFalsasDependecias();
+        	interfaceGrafica.getlistaDeInstrucoes().clear();
+        	
+        	for (int index = 0; index < interfaceGrafica.funcoes.bufferDeInstrucoes.size(); index++)
+    		{
+    			interfaceGrafica.getlistaDeInstrucoes().add(interfaceGrafica.funcoes.bufferDeInstrucoes.get(index));
+    		}
+    	}
+    	else
+    	{
+    		interfaceGrafica.alerta.setTitle("ERROR");
+    		interfaceGrafica.alerta.setContentText("Falha executar instrução");
+    		interfaceGrafica.alerta.setHeaderText("Nenhum grafo selecionado");
+    		interfaceGrafica.alerta.showAndWait();
+    	}
     }
     
     @FXML
     private void handleSalvar()
     {
-    	FileChooser escolherArquivo = new FileChooser();
-    	escolherArquivo.setTitle("Open Resource File");
-    	File arquivo = escolherArquivo.showSaveDialog(null);
-    	
-    	if (arquivo == null)
+    	File arquivo = new File(interfaceGrafica.path);
+    	if (interfaceGrafica.funcoes.bufferDeInstrucoes.size() > 0)
     	{
-    		escolherArquivo.setInitialFileName("grafo reordenado");
+    		interfaceGrafica.funcoes.salvarGrafo(arquivo.getAbsolutePath());
+    		interfaceGrafica.path = arquivo.getAbsolutePath();
+    		interfaceGrafica.notificacao.setTitle("Notication");
+    		interfaceGrafica.notificacao.setContentText("Arquivo salvo em: " + arquivo.getAbsolutePath());
+    		interfaceGrafica.notificacao.setHeaderText("Arquivo salvo com sucesso");
+    		interfaceGrafica.notificacao.showAndWait();
     	}
+    }
+    
+    @FXML
+    private void handleSalvarComo()
+    {
+    	FileChooser escolherArquivo = new FileChooser();
+    	escolherArquivo.setTitle("Salvar em...");
+    	File arquivo = escolherArquivo.showSaveDialog(null);	
+    	if (arquivo != null)
+    	{
+    		interfaceGrafica.funcoes.salvarGrafo(arquivo.getAbsolutePath());
+    		interfaceGrafica.path = arquivo.getAbsolutePath();
+    		interfaceGrafica.notificacao.setTitle("Notication");
+    		interfaceGrafica.notificacao.setContentText("Arquivo salvo em: " + arquivo.getAbsolutePath());
+    		interfaceGrafica.notificacao.setHeaderText("Arquivo salvo com sucesso");
+    		interfaceGrafica.notificacao.showAndWait();
+    	}
+    }
+    
+    @FXML
+    private void handleSobre()
+    {
     	
-    	interfaceGrafica.funcoes.salvarGrafo(interfaceGrafica.buffer, arquivo.getAbsolutePath());
-    	
+    }
+    
+    @FXML
+    private void handleReordenar()
+    {
+    	if (interfaceGrafica.funcoes.bufferDeInstrucoes.size() > 0)
+    	{
+    		interfaceGrafica.funcoes.buscarInstrucoesIndependentes();
+        	interfaceGrafica.funcoes.reordenarInstrucoes();
+        	interfaceGrafica.getlistaDeInstrucoes().clear();
+        	
+        	for (int index = 0; index < interfaceGrafica.funcoes.bufferDeInstrucoes.size(); index++)
+    		{
+    			interfaceGrafica.getlistaDeInstrucoes().add(interfaceGrafica.funcoes.bufferDeInstrucoes.get(index));
+    		}
+    	}
+    	else
+    	{
+    		interfaceGrafica.alerta.setTitle("ERROR");
+    		interfaceGrafica.alerta.setContentText("Falha executar instrução");
+    		interfaceGrafica.alerta.setHeaderText("Nenhum grafo selecionado");
+    		interfaceGrafica.alerta.showAndWait();
+    	}
     }
 }
