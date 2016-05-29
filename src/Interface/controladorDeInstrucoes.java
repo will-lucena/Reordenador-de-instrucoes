@@ -64,28 +64,39 @@ public class controladorDeInstrucoes
 
         // Adiciona os dados da observable list na tabela
         tabelaDeInstrucoes.setItems(interfaceGrafica.getlistaDeInstrucoes());
-    }
+    }    
     
     @FXML
     private void handleAbrir() 
     {
     	FileChooser escolherArquivo = new FileChooser();
     	escolherArquivo.setTitle("Open Resource File");
+    	FileChooser.ExtensionFilter filtro = new FileChooser.ExtensionFilter("grafo files *.txt" , "*.txt");
+    	escolherArquivo.getExtensionFilters().add(filtro);
     	File arquivo = escolherArquivo.showOpenDialog(null);
     	if (arquivo != null)
     	{
     		interfaceGrafica.funcoes.bufferDeInstrucoes.clear();
-    		interfaceGrafica.path = arquivo.getAbsolutePath();
-    		interfaceGrafica.funcoes.lerGrafo(arquivo.getAbsolutePath());
-    		interfaceGrafica.funcoes.mostrarInstrucoes();
-    		if (interfaceGrafica.getlistaDeInstrucoes().size() > 0)
+    		if (interfaceGrafica.funcoes.lerGrafo(arquivo.getAbsolutePath()) != null)
     		{
-    			interfaceGrafica.getlistaDeInstrucoes().clear();
+    			interfaceGrafica.path = arquivo.getAbsolutePath();
+    			interfaceGrafica.funcoes.mostrarInstrucoes();
+        		if (interfaceGrafica.getlistaDeInstrucoes().size() > 0)
+        		{
+        			interfaceGrafica.getlistaDeInstrucoes().clear();
+        		}
+        		for (int index = 0; index < interfaceGrafica.funcoes.bufferDeInstrucoes.size(); index++)
+        		{
+        			interfaceGrafica.getlistaDeInstrucoes().add(interfaceGrafica.funcoes.bufferDeInstrucoes.get(index));
+        		}
     		}
-    		for (int index = 0; index < interfaceGrafica.funcoes.bufferDeInstrucoes.size(); index++)
-    		{
-    			interfaceGrafica.getlistaDeInstrucoes().add(interfaceGrafica.funcoes.bufferDeInstrucoes.get(index));
-    		}
+    		else
+        	{
+        		interfaceGrafica.alerta.setTitle("ERROR");
+        		interfaceGrafica.alerta.setContentText("Falha ao abrir o arquivo");
+        		interfaceGrafica.alerta.setHeaderText("Arquivo inválido");
+        		interfaceGrafica.alerta.showAndWait();
+        	}
     	}
     	else
     	{
@@ -180,12 +191,13 @@ public class controladorDeInstrucoes
     }
     
     @FXML
-    private void handleReordenar()
+    private void handleReordenarERenomear()
     {
     	if (interfaceGrafica.funcoes.bufferDeInstrucoes.size() > 0)
     	{
     		interfaceGrafica.funcoes.buscarInstrucoesIndependentes();
         	interfaceGrafica.funcoes.reordenarInstrucoes();
+        	interfaceGrafica.funcoes.corrigirFalsasDependecias();
         	interfaceGrafica.getlistaDeInstrucoes().clear();
         	
         	for (int index = 0; index < interfaceGrafica.funcoes.bufferDeInstrucoes.size(); index++)

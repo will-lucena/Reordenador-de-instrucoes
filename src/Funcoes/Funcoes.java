@@ -119,6 +119,18 @@ public class Funcoes
 		}
 	}
 	
+	boolean isGrafo(String cabecalho)
+	{
+		String chave = "#inst 	tipo	dest 	op1 	op2 	#inst_recebe_resultado";
+		String chaveLonga = "#inst 	tipo	dest 	op1 	op2 	#inst_recebe_resultado	Ciclo_Inicial	Falsa_Dependencia";
+		
+		if (cabecalho.equals(chave) || cabecalho.equals(chaveLonga))
+		{
+			return true;
+		}
+		return false;
+	}
+	
 	/*
 	 * Função responsável por ler o arquivo .txt com o grafo de instruções e criar o ArrayList que servirá como buffer do arquivo
 	 * Recebe uma string com o caminho do .txt do grafo
@@ -143,6 +155,11 @@ public class Funcoes
 			 */
 			BufferedReader readerBuffer = new BufferedReader(new FileReader(grafo));
 			String linha = readerBuffer.readLine();
+			if (!isGrafo(linha))
+			{
+				readerBuffer.close();
+				return null;
+			}
 			linha = readerBuffer.readLine();
 			
 			while (linha != null)
@@ -319,8 +336,10 @@ public class Funcoes
 			indepentente = false;
 			
 		}
+		bufferDeInstrucoes = clonarLista(bufferDaLista);
 		System.out.println("Foram encontradas " + instrucoesIndependentes + " instrucoes independentes");
 		System.out.println(">>> Busca de instruções independentes encerrada! <<<\n");
+		mostrarInstrucoes();
 	}
 	
 	/*
@@ -547,7 +566,7 @@ public class Funcoes
 					simularCiclos();
 					while(buscarConflitoAuxiliar(posicaoAtualDaInstrucao-1) == true && posicaoAtualDaInstrucao > 1)
 					{
-						if (!analisarCorretude() || !corrigirFalsasDependecias())
+						if (!analisarCorretude())
 						{
 							podeTrocar = false;
 							break;
@@ -572,7 +591,7 @@ public class Funcoes
 		if (bufferDeInstrucoes.get(bufferDeInstrucoes.size()-1).getCicloInicial() + 4 > totalDeCiclosAntigo)
 			bufferDeInstrucoes = clonarLista(listaAntiga);
 	}
-
+	
 	/*
 	 * Função responsável por buscar e corrigir as falsas dependencias
 	 * Está é uma função interna, usada em conjunto com a analise de corretude no reordenamento
@@ -617,19 +636,31 @@ public class Funcoes
 						for (int posicao = indexAux; posicao < bufferDeInstrucoes.size(); posicao++)
 						{
 							String dependentes = instrucaoEmQuarentena.getDependentes();
-							String instrucaoAtual = bufferDeInstrucoes.get(posicao).getNumeroDaInstrucao();
+							String instrucaoAtual = bufferDeInstrucoes.get(posicao).getNumeroDaInstrucao();							
+							
 							if (dependentes.contains(instrucaoAtual))
 							{
 								if (bufferDeInstrucoes.get(posicao).getOperando1().getNome().contains(registradorAntigo.getNome()))
 								{
-									bufferDeInstrucoes.get(posicao).setOperando1(instrucaoEmQuarentena.getDestino());
+									if (bufferDeInstrucoes.get(posicao).getOperando1().getNome().endsWith(Integer.toString(posicao)))
+									{
+										bufferDeInstrucoes.get(posicao).setOperando1(instrucaoEmQuarentena.getDestino());
+										bufferDeInstrucoes.get(posicao).getOperando1().setNome(
+												bufferDeInstrucoes.get(posicao).getOperando1().getNome() + "<-" + Integer.toString(posicao));
+									}
 								}
 								if (bufferDeInstrucoes.get(posicao).getOperando2().getNome().contains(registradorAntigo.getNome()))
 								{
-									bufferDeInstrucoes.get(posicao).setOperando2(instrucaoEmQuarentena.getDestino());
+									if (bufferDeInstrucoes.get(posicao).getOperando2().getNome().endsWith(Integer.toString(posicao)))
+									{
+										bufferDeInstrucoes.get(posicao).setOperando2(instrucaoEmQuarentena.getDestino());
+										bufferDeInstrucoes.get(posicao).getOperando2().setNome(
+												bufferDeInstrucoes.get(posicao).getOperando2().getNome() + "<-" + Integer.toString(posicao));
+									}
 								}
 							}
 						}
+						mostrarInstrucoes();
 					}
 					atualizarBancoDeRegistradores();
 				}
