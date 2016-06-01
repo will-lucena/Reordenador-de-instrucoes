@@ -8,6 +8,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -19,10 +21,12 @@ public class InterfaceGrafica extends Application {
 
 	private Stage primaryStage;
 	private BorderPane painelInicial;
+	ArrayList<Instrucao> bufferLista = new ArrayList<>();
 	private ObservableList<Instrucao> listaDeInstrucoes = FXCollections.observableArrayList();
-	public ArrayList<Instrucao> buffer = new ArrayList<>();
 	public Funcoes funcoes = new Funcoes();
 	String path = "";
+	Alert alerta = new Alert(AlertType.WARNING);
+	Alert notificacao = new Alert(AlertType.INFORMATION);
 	
 	public InterfaceGrafica()
 	{		
