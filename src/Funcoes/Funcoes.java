@@ -161,6 +161,7 @@ public class Funcoes
 			readerBuffer.close();
 			criarBancoDeRegistradores("src/registradores.txt");
 			atualizarBancoDeRegistradores(bufferDeInstrucoes);
+			simularCiclos(bufferDeInstrucoes);
 			return bufferDeInstrucoes;
 		}
 		catch (IOException exception)
@@ -172,7 +173,7 @@ public class Funcoes
 		}
 		finally
 		{
-			System.out.println(">>> Leitura do grafo encerrada! <<<\n");
+			System.out.println(">>> Leitura do grafo encerrada <<<\n");
 		}
 	}
 	
@@ -599,7 +600,7 @@ public class Funcoes
 	 * Por final atualiza o banco de registradores para salvar as modificações e retorna true
 	 * 
 	 */
-	public boolean corrigirFalsasDependecias(ArrayList<Instrucao> listaDeInstrucoes)
+	public boolean renomearRegistradores(ArrayList<Instrucao> listaDeInstrucoes)
 	{
 		ArrayList<Integer> instrucoesEmQuarentena = new ArrayList<>();
 		for (int index = 0; index< listaDeInstrucoes.size(); index++)

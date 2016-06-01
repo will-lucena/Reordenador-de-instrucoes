@@ -8,7 +8,8 @@
   </information>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="Reordenador-de-instrucoes.jar" size="13357" download="eager" />
+    <jar href="Reordenador-de-instrucoes.jar" size="13519" download="eager" />
+    <jar href="libs\controlsfx-8.0.6_20.jar" size="856539" download="eager" />
   </resources>
   <jfx:javafx-desc  width="0" height="0" main-class="Interface.InterfaceGrafica"  name="Reordenador de Instrucoes" />
   <update check="background"/>

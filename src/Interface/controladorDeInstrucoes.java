@@ -136,7 +136,7 @@ public class controladorDeInstrucoes
     {
     	if (interfaceGrafica.bufferLista.size() > 0)
     	{
-    		interfaceGrafica.funcoes.corrigirFalsasDependecias(interfaceGrafica.bufferLista);
+    		interfaceGrafica.funcoes.renomearRegistradores(interfaceGrafica.bufferLista);
         	interfaceGrafica.getlistaDeInstrucoes().clear();
         	
         	for (int index = 0; index < interfaceGrafica.bufferLista.size(); index++)
@@ -198,7 +198,7 @@ public class controladorDeInstrucoes
     	{
     		interfaceGrafica.bufferLista = interfaceGrafica.funcoes.buscarInstrucoesIndependentes(interfaceGrafica.bufferLista);
     		interfaceGrafica.bufferLista = interfaceGrafica.funcoes.reordenarInstrucoes(interfaceGrafica.bufferLista);
-        	interfaceGrafica.funcoes.corrigirFalsasDependecias(interfaceGrafica.bufferLista);
+        	interfaceGrafica.funcoes.renomearRegistradores(interfaceGrafica.bufferLista);
         	interfaceGrafica.getlistaDeInstrucoes().clear();
         	
         	for (int index = 0; index < interfaceGrafica.bufferLista.size(); index++)

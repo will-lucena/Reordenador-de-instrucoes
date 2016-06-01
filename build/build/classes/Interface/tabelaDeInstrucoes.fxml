@@ -52,7 +52,7 @@
                                  <items>
                                     <MenuItem mnemonicParsing="false" onAction="#handleReordenarInstrucoes" text="Reordenar instruções" />
                                     <MenuItem mnemonicParsing="false" onAction="#handleRenomearRegistradores" text="Renomear registradores" />
-                                    <MenuItem mnemonicParsing="false" onAction="#handleReordenar" text="Reordenar e renomear" />
+                                    <MenuItem mnemonicParsing="false" onAction="#handleReordenarERenomear" text="Reordenar e renomear" />
                                  </items>
                               </Menu>
                           </items>
