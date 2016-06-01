@@ -1,8 +1,0 @@
-#inst 	tipo	dest 	op1 	op2 	#inst_recebe_resultado	Ciclo_Inicial	Falsa_Dependencia
-1	add	$s3	$s1	$s2	2,3	0	false
-4	mult	$s7	$s5	$s6	5	1	false
-2	sub	$s4	$s3<-1	$s5	3	2	false
-3	add	$s3	$s3<-1	$s4<-2	6,7	5	true
-5	mov	$t1	$s7<-5	$zero		6	false
-6	lw	$t1	100	$t0<-3	7	9	true
-7	add	$t3	$t2<-6	$t0<-3		12	false
