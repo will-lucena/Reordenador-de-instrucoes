@@ -1,6 +1,7 @@
 package Interface;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -20,6 +21,7 @@ public class InterfaceGrafica extends Application {
 
 	private Stage primaryStage;
 	private BorderPane painelInicial;
+	ArrayList<Instrucao> bufferLista = new ArrayList<>();
 	private ObservableList<Instrucao> listaDeInstrucoes = FXCollections.observableArrayList();
 	public Funcoes funcoes = new Funcoes();
 	String path = "";

@@ -76,18 +76,19 @@ public class controladorDeInstrucoes
     	File arquivo = escolherArquivo.showOpenDialog(null);
     	if (arquivo != null)
     	{
-    		interfaceGrafica.funcoes.bufferDeInstrucoes.clear();
+    		interfaceGrafica.bufferLista.clear();
+    		interfaceGrafica.bufferLista = interfaceGrafica.funcoes.lerGrafo(arquivo.getAbsolutePath());
     		if (interfaceGrafica.funcoes.lerGrafo(arquivo.getAbsolutePath()) != null)
     		{
     			interfaceGrafica.path = arquivo.getAbsolutePath();
-    			interfaceGrafica.funcoes.mostrarInstrucoes();
+    			interfaceGrafica.funcoes.mostrarInstrucoes(interfaceGrafica.bufferLista);
         		if (interfaceGrafica.getlistaDeInstrucoes().size() > 0)
         		{
         			interfaceGrafica.getlistaDeInstrucoes().clear();
         		}
-        		for (int index = 0; index < interfaceGrafica.funcoes.bufferDeInstrucoes.size(); index++)
+        		for (int index = 0; index < interfaceGrafica.bufferLista.size(); index++)
         		{
-        			interfaceGrafica.getlistaDeInstrucoes().add(interfaceGrafica.funcoes.bufferDeInstrucoes.get(index));
+        			interfaceGrafica.getlistaDeInstrucoes().add(interfaceGrafica.bufferLista.get(index));
         		}
     		}
     		else
@@ -110,15 +111,15 @@ public class controladorDeInstrucoes
     @FXML
     private void handleReordenarInstrucoes()
     {
-    	if (interfaceGrafica.funcoes.bufferDeInstrucoes.size() > 0)
+    	if (interfaceGrafica.bufferLista.size() > 0)
     	{
-    		interfaceGrafica.funcoes.buscarInstrucoesIndependentes();
-        	interfaceGrafica.funcoes.reordenarInstrucoes();
+    		interfaceGrafica.bufferLista = interfaceGrafica.funcoes.buscarInstrucoesIndependentes(interfaceGrafica.bufferLista);
+    		interfaceGrafica.bufferLista = interfaceGrafica.funcoes.reordenarInstrucoes(interfaceGrafica.bufferLista);
         	interfaceGrafica.getlistaDeInstrucoes().clear();
         	
-        	for (int index = 0; index < interfaceGrafica.funcoes.bufferDeInstrucoes.size(); index++)
+        	for (int index = 0; index < interfaceGrafica.bufferLista.size(); index++)
     		{
-    			interfaceGrafica.getlistaDeInstrucoes().add(interfaceGrafica.funcoes.bufferDeInstrucoes.get(index));
+    			interfaceGrafica.getlistaDeInstrucoes().add(interfaceGrafica.bufferLista.get(index));
     		}
     	}
     	else
@@ -133,14 +134,14 @@ public class controladorDeInstrucoes
     @FXML
     private void handleRenomearRegistradores()
     {
-    	if (interfaceGrafica.funcoes.bufferDeInstrucoes.size() > 0)
+    	if (interfaceGrafica.bufferLista.size() > 0)
     	{
-    		interfaceGrafica.funcoes.corrigirFalsasDependecias();
+    		interfaceGrafica.funcoes.corrigirFalsasDependecias(interfaceGrafica.bufferLista);
         	interfaceGrafica.getlistaDeInstrucoes().clear();
         	
-        	for (int index = 0; index < interfaceGrafica.funcoes.bufferDeInstrucoes.size(); index++)
+        	for (int index = 0; index < interfaceGrafica.bufferLista.size(); index++)
     		{
-    			interfaceGrafica.getlistaDeInstrucoes().add(interfaceGrafica.funcoes.bufferDeInstrucoes.get(index));
+    			interfaceGrafica.getlistaDeInstrucoes().add(interfaceGrafica.bufferLista.get(index));
     		}
     	}
     	else
@@ -156,9 +157,9 @@ public class controladorDeInstrucoes
     private void handleSalvar()
     {
     	File arquivo = new File(interfaceGrafica.path);
-    	if (interfaceGrafica.funcoes.bufferDeInstrucoes.size() > 0)
+    	if (interfaceGrafica.bufferLista.size() > 0)
     	{
-    		interfaceGrafica.funcoes.salvarGrafo(arquivo.getAbsolutePath());
+    		interfaceGrafica.funcoes.salvarGrafo(interfaceGrafica.bufferLista, arquivo.getAbsolutePath());
     		interfaceGrafica.path = arquivo.getAbsolutePath();
     		interfaceGrafica.notificacao.setTitle("Notication");
     		interfaceGrafica.notificacao.setContentText("Arquivo salvo em: " + arquivo.getAbsolutePath());
@@ -175,7 +176,7 @@ public class controladorDeInstrucoes
     	File arquivo = escolherArquivo.showSaveDialog(null);	
     	if (arquivo != null)
     	{
-    		interfaceGrafica.funcoes.salvarGrafo(arquivo.getAbsolutePath());
+    		interfaceGrafica.funcoes.salvarGrafo(interfaceGrafica.bufferLista, arquivo.getAbsolutePath());
     		interfaceGrafica.path = arquivo.getAbsolutePath();
     		interfaceGrafica.notificacao.setTitle("Notication");
     		interfaceGrafica.notificacao.setContentText("Arquivo salvo em: " + arquivo.getAbsolutePath());
@@ -193,16 +194,16 @@ public class controladorDeInstrucoes
     @FXML
     private void handleReordenarERenomear()
     {
-    	if (interfaceGrafica.funcoes.bufferDeInstrucoes.size() > 0)
+    	if (interfaceGrafica.bufferLista.size() > 0)
     	{
-    		interfaceGrafica.funcoes.buscarInstrucoesIndependentes();
-        	interfaceGrafica.funcoes.reordenarInstrucoes();
-        	interfaceGrafica.funcoes.corrigirFalsasDependecias();
+    		interfaceGrafica.bufferLista = interfaceGrafica.funcoes.buscarInstrucoesIndependentes(interfaceGrafica.bufferLista);
+    		interfaceGrafica.bufferLista = interfaceGrafica.funcoes.reordenarInstrucoes(interfaceGrafica.bufferLista);
+        	interfaceGrafica.funcoes.corrigirFalsasDependecias(interfaceGrafica.bufferLista);
         	interfaceGrafica.getlistaDeInstrucoes().clear();
         	
-        	for (int index = 0; index < interfaceGrafica.funcoes.bufferDeInstrucoes.size(); index++)
+        	for (int index = 0; index < interfaceGrafica.bufferLista.size(); index++)
     		{
-    			interfaceGrafica.getlistaDeInstrucoes().add(interfaceGrafica.funcoes.bufferDeInstrucoes.get(index));
+    			interfaceGrafica.getlistaDeInstrucoes().add(interfaceGrafica.bufferLista.get(index));
     		}
     	}
     	else
